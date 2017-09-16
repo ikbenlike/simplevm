@@ -1,0 +1,10 @@
+*
+!/**/
+!*.*
+!Makefile
+*.o
+*.so
+*.lib
+*.dll
+*.out
+vgcore.*
