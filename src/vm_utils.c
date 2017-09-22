@@ -1,15 +1,18 @@
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include "vm.h"
 #include "vm_utils.h"
 
-svm_t *svm_init(size_t code_size, size_t stack_size, size_t baseiptr){
+svm_t *svm_init(size_t code_size, size_t stack_size, size_t cstack_size, size_t baseiptr){
     svm_t *vm = calloc(1, sizeof(svm_t));
     vm->baseiptr = baseiptr;
     vm->code_size = code_size;
     vm->stack_size = stack_size;
+    vm->cstack_size = cstack_size;
     vm->code = calloc(code_size, sizeof(svm_stack_item_t));
     vm->stack = calloc(stack_size, sizeof(svm_stack_item_t));
+    vm->cstack = calloc(cstack_size, sizeof(svm_context_t));
     return vm;
 }
 
@@ -29,4 +32,41 @@ inline void svm_append_float(svm_stack_item_t *stack, size_t sptr, float value){
     stack[sptr].type = svm_float;
     stack[sptr].floating = value;
     return;
+}
+
+inline void svm_append_string(svm_stack_item_t *stack, size_t sptr, svm_string_t *value){
+    stack[sptr].type = svm_string;
+    stack[sptr].string = value;
+    return;
+}
+
+inline void svm_append_function(svm_stack_item_t *stack, size_t sptr, svm_function_t value){
+    stack[sptr].type = svm_function;
+    stack[sptr].function = value;
+    return;
+}
+
+inline svm_function_t svm_generate_function(size_t nargs, size_t nlocals, size_t addr){
+    svm_function_t function;
+    function.nargs = nargs;
+    function.nlocals = nlocals;
+    function.addr = addr;
+    return function;
+}
+
+inline svm_string_t *svm_string_cat(svm_string_t *a, svm_string_t *b){
+    svm_string_t *dest = calloc(1, sizeof(svm_string_t));
+    dest->str = calloc(a->len + b->len, sizeof(char));
+    strncpy(dest->str, a->str, a->len);
+    strncpy(dest->str + a->len, b->str, b->len);
+    dest->len = a->len + b->len;
+    return dest;
+}
+
+inline svm_string_t *svm_string_from_cstr(char *str){
+    svm_string_t *dest = calloc(1, sizeof(svm_string_t));
+    dest->len = strlen(str);
+    dest->str = calloc(dest->len, sizeof(char));
+    strncpy(dest->str, str, dest->len);
+    return dest;
 }
