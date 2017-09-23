@@ -37,6 +37,7 @@
         PUSH,
         CALL,
         RET,
+        LOAD,
         HALT,
     };
 

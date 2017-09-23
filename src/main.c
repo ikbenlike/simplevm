@@ -3,23 +3,39 @@
 #include "vm_utils.h"
 
 int main(int argc, char **argv){
-    svm_t *vm = svm_init(100, 100, 100, 0);
-    svm_append_opcode(vm->code, 0, PUSH);
-    svm_append_float(vm->code, 1, 10.0);
-    svm_append_opcode(vm->code, 2, PUSH);
-    svm_append_float(vm->code, 3, 10.0);
-    svm_append_opcode(vm->code, 4, FADD);
-    svm_append_opcode(vm->code, 5, FPRINT);
-    svm_append_opcode(vm->code, 6, PUSH);
-    svm_append_string(vm->code, 7, svm_string_from_cstr("Hello, World!"));
-    svm_append_opcode(vm->code, 8, SPRINT);
-    svm_append_opcode(vm->code, 9, CALL);
-    svm_append_function(vm->code, 10, svm_generate_function(0, 1, 12));
-    svm_append_opcode(vm->code, 11, HALT);
-    svm_append_opcode(vm->code, 12, PUSH);
-    svm_append_string(vm->code, 13, svm_string_from_cstr("Hello, Function World!"));
-    svm_append_opcode(vm->code, 14, SPRINT);
-    svm_append_opcode(vm->code, 15, RET);
+    svm_t *vm = svm_init(100, 100, 100, 11);
+    size_t sptr = 0;
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_string(vm->code, sptr++, svm_string_from_cstr("Hello, Function World!"));
+    svm_append_opcode(vm->code, sptr++, SPRINT);
+    svm_append_opcode(vm->code, sptr++, RET);
+
+    svm_append_opcode(vm->code, sptr++, LOAD);
+    svm_append_integer(vm->code, sptr++, 0);
+    svm_append_opcode(vm->code, sptr++, LOAD);
+    svm_append_integer(vm->code, sptr++, 1);
+    svm_append_opcode(vm->code, sptr++, IMUL);
+    svm_append_opcode(vm->code, sptr++, IPRINT);
+    svm_append_opcode(vm->code, sptr++, RET);
+
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_float(vm->code, sptr++, 10.0);
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_float(vm->code, sptr++, 10.0);
+    svm_append_opcode(vm->code, sptr++, FADD);
+    svm_append_opcode(vm->code, sptr++, FPRINT);
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_string(vm->code, sptr++, svm_string_from_cstr("Hello, World!"));
+    svm_append_opcode(vm->code, sptr++, SPRINT);
+    svm_append_opcode(vm->code, sptr++, CALL);
+    svm_append_function(vm->code, sptr++, svm_generate_function(0, 1, 0));
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_integer(vm->code, sptr++, 4);
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_integer(vm->code, sptr++, 5);
+    svm_append_opcode(vm->code, sptr++, CALL);
+    svm_append_function(vm->code, sptr++, svm_generate_function(2, 0, 4));
+    svm_append_opcode(vm->code, sptr++, HALT);
     svm_exec(vm);
     return 0;
 }

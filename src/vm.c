@@ -197,6 +197,7 @@ svm_stack_item_t *svm_exec(svm_t *vm){
             }
             case CALL: {
                 ssize_t addr = vm->code[s_iptr].function.addr;
+                s_csptr++;
                 vm->cstack[s_csptr].ret = s_iptr;
                 vm->cstack[s_csptr].locals = calloc(vm->code[s_iptr].function.nlocals + vm->code[s_iptr].function.nargs, sizeof(svm_stack_item_t));
                 for(size_t i = 0; i < vm->code[s_iptr].function.nargs; i++){
@@ -209,6 +210,11 @@ svm_stack_item_t *svm_exec(svm_t *vm){
             case RET: {
                 s_iptr = vm->cstack[s_csptr].ret + 1;
                 s_csptr--;
+                break;
+            }
+            case LOAD: {
+                ssize_t offset = vm->code[s_iptr++].integer;
+                vm->stack[++s_sptr] = vm->cstack[s_csptr].locals[offset];
                 break;
             }
             case HALT:
