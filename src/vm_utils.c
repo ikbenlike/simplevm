@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <errno.h>
 #include "vm.h"
 #include "vm_utils.h"
 
@@ -69,4 +71,28 @@ inline svm_string_t *svm_string_from_cstr(char *str){
     dest->str = calloc(dest->len, sizeof(char));
     strncpy(dest->str, str, dest->len);
     return dest;
+}
+
+inline char *svm_get_term_input(FILE *stream){
+    size_t len = 512;
+    size_t i = 0;
+    int c = 0;
+    char *buffer = calloc(len, sizeof(char));
+    for(c = getc(stream); c != '\n' && c != EOF; c = getc(stream)){
+        buffer[i++] = (char)c;
+        if(i == len){
+            char *tmp = realloc(buffer, len * 2);
+            if(tmp){
+                buffer = tmp;
+                len *= 2;
+            }
+            else {
+                fprintf(stderr, "SimpleVM: %s\n", strerror(errno));
+                free(buffer);
+                exit(1);
+            }
+        }
+    }
+    buffer[i] = '\0';
+    return buffer;
 }

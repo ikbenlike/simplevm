@@ -107,6 +107,12 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 puts(a ? "true" : "false");
                 break;
             }
+            case SIN: {
+                char *tmp = svm_get_term_input(stdin);
+                vm->stack[++s_sptr].string = svm_string_from_cstr(tmp);
+                free(tmp);
+                break;
+            }
             case CADD: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;

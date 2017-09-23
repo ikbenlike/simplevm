@@ -34,6 +34,7 @@
         FPRINT,
         SPRINT,
         BPRINT,
+        SIN,
         PUSH,
         CALL,
         RET,

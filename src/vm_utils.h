@@ -12,5 +12,6 @@
     svm_function_t svm_generate_function(size_t nargs, size_t nlocals, size_t addr);
     svm_string_t *svm_string_cat(svm_string_t *a, svm_string_t *b);
     svm_string_t *svm_string_from_cstr(char *str);
+    char *svm_get_term_input(FILE *stream);
 
 #endif
