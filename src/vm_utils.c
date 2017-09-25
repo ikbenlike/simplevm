@@ -73,6 +73,13 @@ inline svm_string_t *svm_string_from_cstr(char *str){
     return dest;
 }
 
+inline char *svm_char_from_svm_str(svm_string_t *str){
+    char *string = calloc(str->len + 1, sizeof(char));
+    memcpy(string, str->str, str->len);
+    string[str->len + 1] = '\0';
+    return string;
+}
+
 inline char *svm_get_term_input(FILE *stream){
     size_t len = 512;
     size_t i = 0;
