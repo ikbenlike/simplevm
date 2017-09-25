@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "vm.h"
 #include "vm_utils.h"
+#include "ffi.h"
 
 int main(int argc, char **argv){
     svm_t *vm = svm_init(100, 100, 100, 10);
