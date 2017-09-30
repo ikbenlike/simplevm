@@ -50,7 +50,7 @@ void svm_ffi_call(svm_ffi_t *ffi, svm_stack_item_t *args){
     char **strarray = calloc(ffi->nargs, sizeof(char*));
     size_t strarrayi = 0;
     size_t end = 0;
-    for(end = 0; end < 6; end++){
+    for(end = 0; end < 6 && end < ffi->nargs; end++){
         switch(args[end].type){
             case svm_integer: {
                 if(end == 0){
@@ -117,22 +117,28 @@ void svm_ffi_call(svm_ffi_t *ffi, svm_stack_item_t *args){
             }
             case svm_string: {
                 if(end == 0){
-                    FFI_NATIVE_RDI(args[end].string);
+                    strarray[strarrayi++] = svm_char_from_svm_str(args[end].string);
+                    FFI_NATIVE_RDI(strarray[strarrayi - 1]);
                 }
                 else if(end == 1){
-                    FFI_NATIVE_RSI(args[end].string);
+                    strarray[strarrayi++] = svm_char_from_svm_str(args[end].string);
+                    FFI_NATIVE_RSI(strarray[strarrayi - 1]);
                 }
                 else if(end == 2){
-                    FFI_NATIVE_RDX(args[end].string);
+                    strarray[strarrayi++] = svm_char_from_svm_str(args[end].string);
+                    FFI_NATIVE_RDX(strarray[strarrayi - 1]);
                 }
                 else if(end == 3){
-                    FFI_NATIVE_RCX(args[end].string);
+                    strarray[strarrayi++] = svm_char_from_svm_str(args[end].string);
+                    FFI_NATIVE_RCX(strarray[strarrayi - 1]);
                 }
                 else if(end == 4){
-                    FFI_NATIVE_R8(args[end].string);
+                    strarray[strarrayi++] = svm_char_from_svm_str(args[end].string);
+                    FFI_NATIVE_R8(strarray[strarrayi - 1]);
                 }
                 else if(end == 5){
-                    FFI_NATIVE_R9(args[end].string);
+                    strarray[strarrayi++] = svm_char_from_svm_str(args[end].string);
+                    FFI_NATIVE_R9(strarray[strarrayi - 1]);
                 }
                 break;
             }
@@ -158,7 +164,7 @@ void svm_ffi_call(svm_ffi_t *ffi, svm_stack_item_t *args){
             }
             case svm_string: {
                 strarray[strarrayi++] = svm_char_from_svm_str(args[ffi->nargs - i].string);
-                FFI_NATIVE_PUSH(args[ffi->nargs - i].floating);
+                FFI_NATIVE_PUSH(strarray[strarrayi - 1]);
             }
             default: 
                 fprintf(stderr, "SimpleVM: FFI: invalid type on line #%d\n", __LINE__);
