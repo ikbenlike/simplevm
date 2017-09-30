@@ -31,17 +31,23 @@ svm_ffi_t *svm_load_lib(char *path){
 
 svm_ffi_t *svm_get_function(svm_ffi_t *ffi){
     ffi->func = dlsym(ffi->handle, ffi->f_name);
-    return ffi;
+    if(ffi->func){
+        return ffi;
+    }
+    fprintf(stderr, "SimpleVM: FFI: %s\n", dlerror());
+    return NULL;
 }
 
-svm_ffi_t *svm_init_ffi(char *path, char *name){
+svm_ffi_t *svm_init_ffi(char *path, char *name, size_t nargs){
     svm_ffi_t *ffi = svm_load_lib(path);
+    ffi->f_name = name;
     ffi = svm_get_function(ffi);
+    ffi->nargs = nargs;
     return ffi;
 }
 
-void svm_ffi_call(svm_ffi_t *ffi, svm_stack_item_t *args, size_t nargs){
-    char **strarray = calloc(nargs, sizeof(char*));
+void svm_ffi_call(svm_ffi_t *ffi, svm_stack_item_t *args){
+    char **strarray = calloc(ffi->nargs, sizeof(char*));
     size_t strarrayi = 0;
     size_t end = 0;
     for(end = 0; end < 6; end++){
@@ -135,24 +141,24 @@ void svm_ffi_call(svm_ffi_t *ffi, svm_stack_item_t *args, size_t nargs){
                 break;
         }
     }
-    for(size_t i = 0; nargs - i > end; i++){
-        switch(args[nargs - i].type){
+    for(size_t i = 0; ffi->nargs - i > end; i++){
+        switch(args[ffi->nargs - i].type){
             case svm_integer: {
-                FFI_NATIVE_PUSH(args[nargs - i].integer);
+                FFI_NATIVE_PUSH(args[ffi->nargs - i].integer);
                 break;
             }
             case svm_float: {
-                FFI_NATIVE_PUSH(args[nargs - i].floating);
+                FFI_NATIVE_PUSH(args[ffi->nargs - i].floating);
             }
             case svm_boolean: {
-                FFI_NATIVE_PUSH(args[nargs - i].floating);
+                FFI_NATIVE_PUSH(args[ffi->nargs - i].floating);
             }
             case svm_character: {
-                FFI_NATIVE_PUSH(args[nargs - i].floating);
+                FFI_NATIVE_PUSH(args[ffi->nargs - i].floating);
             }
             case svm_string: {
-                strarray[strarrayi++] = svm_char_from_svm_str(args[nargs - i].string);
-                FFI_NATIVE_PUSH(args[nargs - i].floating);
+                strarray[strarrayi++] = svm_char_from_svm_str(args[ffi->nargs - i].string);
+                FFI_NATIVE_PUSH(args[ffi->nargs - i].floating);
             }
             default: 
                 fprintf(stderr, "SimpleVM: FFI: invalid type on line #%d\n", __LINE__);
