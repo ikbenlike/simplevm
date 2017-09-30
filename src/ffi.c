@@ -5,12 +5,7 @@
 #include "vm_utils.h"
 #include "ffi.h"
 
-#define FFI_NATIVE_PUSH(ITEM) asm volatile ( \
-                                    "push rax;" \
-                                    : \
-                                    : "a" (ITEM) \
-                                );
-
+#define FFI_NATIVE_PUSH(ITEM) asm volatile ( "push rax;" : : "a" (ITEM) );
 #define FFI_NATIVE_RDI(ITEM) asm volatile ( "mov rdi, rax;" : : "a" (ITEM));
 #define FFI_NATIVE_RSI(ITEM) asm volatile ( "mov rsi, rax;" : : "a" (ITEM));
 #define FFI_NATIVE_RDX(ITEM) asm volatile ( "mov rdx, rax;" : : "a" (ITEM));
