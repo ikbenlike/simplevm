@@ -10,8 +10,6 @@
 svm_stack_item_t *svm_exec(svm_t *vm){
     ssize_t s_iptr = vm->baseiptr;
     ssize_t s_sptr = 0;
-    ssize_t s_jmp_addr = 0;
-    ssize_t s_ret_addr = 0;
     ssize_t s_csptr = 0;
 
     int opcode = vm->code[s_iptr].opcode;
