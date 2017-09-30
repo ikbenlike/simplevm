@@ -5,6 +5,7 @@
 #include <errno.h>
 #include "vm.h"
 #include "vm_utils.h"
+#include "ffi.h"
 
 svm_t *svm_init(size_t code_size, size_t stack_size, size_t cstack_size, size_t baseiptr){
     svm_t *vm = calloc(1, sizeof(svm_t));
@@ -45,6 +46,12 @@ inline void svm_append_string(svm_stack_item_t *stack, size_t sptr, svm_string_t
 inline void svm_append_function(svm_stack_item_t *stack, size_t sptr, svm_function_t value){
     stack[sptr].type = svm_function;
     stack[sptr].function = value;
+    return;
+}
+
+inline void svm_append_ffi(svm_stack_item_t *stack, size_t sptr, svm_ffi_t *value){
+    stack[sptr].type = svm_ffi;
+    stack[sptr].ffi = value;
     return;
 }
 
