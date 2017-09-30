@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include "vm.h"
 #include "vm_utils.h"
+#include "ffi.h"
 
 svm_stack_item_t *svm_exec(svm_t *vm){
     ssize_t s_iptr = vm->baseiptr;
@@ -211,6 +212,18 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 }
                 s_sptr -= vm->code[s_iptr].function.nargs;
                 s_iptr = addr;
+                break;
+            }
+            case FFI: {
+                puts("FFI opcode");
+                svm_ffi_t *n_ffi = vm->code[s_iptr].ffi;
+                svm_stack_item_t *n_stack = calloc(n_ffi->nargs, sizeof(svm_stack_item_t));
+                for(size_t i = 0; i < n_ffi->nargs; i++){
+                    printf("%zu\n", i);
+                    n_stack[i] = vm->stack[s_sptr - i];
+                }
+                svm_ffi_call(n_ffi, n_stack);
+                s_iptr++;
                 break;
             }
             case RET: {

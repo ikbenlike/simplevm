@@ -37,6 +37,7 @@
         SIN,
         PUSH,
         CALL,
+        FFI,
         RET,
         LOAD,
         HALT,
@@ -50,7 +51,15 @@
         svm_character,
         svm_string,
         svm_function,
+        svm_ffi,
     };
+
+    typedef struct {
+        size_t nargs;
+        char *f_name;
+        void *handle;
+        void *func;
+    } svm_ffi_t;
 
     typedef struct {
         char *str;
@@ -73,6 +82,7 @@
             char character;
             svm_string_t *string;
             svm_function_t function;
+            svm_ffi_t *ffi;
         };
     } svm_stack_item_t;
 
