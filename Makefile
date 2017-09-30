@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS ?= -O2 -Wall -std=gnu99 -masm=intel
+CFLAGS ?= -O2 -Wall -std=gnu99 -masm=intel -g
 LDFLAGS ?= -ldl
 
 ODIR = ./bin
