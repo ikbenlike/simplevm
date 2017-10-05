@@ -40,8 +40,10 @@ int main(int argc, char **argv){
     svm_append_opcode(vm->code, sptr++, SPRINT);
     svm_append_opcode(vm->code, sptr++, PUSH);
     svm_append_string(vm->code, sptr++, svm_string_from_cstr("Hello, Native World!"));
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_string(vm->code, sptr++, svm_string_from_cstr("%s\n"));
     svm_append_opcode(vm->code, sptr++, FFI);
-    svm_append_ffi(vm->code, sptr++, svm_init_ffi("/usr/lib/libc.so.6", "puts", 1));
+    svm_append_ffi(vm->code, sptr++, svm_init_ffi("/usr/lib/libc.so.6", "strcmp", 2));
     svm_append_opcode(vm->code, sptr++, HALT);
     svm_exec(vm);
     return 0;
