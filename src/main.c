@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "vm.h"
 #include "vm_utils.h"
-#include "ffi.h"
 
 int main(int argc, char **argv){
     svm_t *vm = svm_init(100, 100, 100, 10);
@@ -39,11 +38,20 @@ int main(int argc, char **argv){
     svm_append_opcode(vm->code, sptr++, SIN);
     svm_append_opcode(vm->code, sptr++, SPRINT);
     svm_append_opcode(vm->code, sptr++, PUSH);
-    svm_append_string(vm->code, sptr++, svm_string_from_cstr("Hello, Native World!"));
+    svm_append_integer(vm->code, sptr++, 10);
     svm_append_opcode(vm->code, sptr++, PUSH);
-    svm_append_string(vm->code, sptr++, svm_string_from_cstr("%s\n"));
-    svm_append_opcode(vm->code, sptr++, FFI);
-    svm_append_ffi(vm->code, sptr++, svm_init_ffi("/usr/lib/libc.so.6", "strcmp", 2));
+    svm_append_integer(vm->code, sptr++, 10);
+    svm_append_opcode(vm->code, sptr++, CMPD);
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_integer(vm->code, sptr, 3);
+    sptr++;
+    svm_append_opcode(vm->code, sptr++, RJMPIF);
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_string(vm->code, sptr++, svm_string_from_cstr("Nope!"));
+    svm_append_opcode(vm->code, sptr++, SPRINT);
+    svm_append_opcode(vm->code, sptr++, PUSH);
+    svm_append_string(vm->code, sptr++, svm_string_from_cstr("Yeah!"));
+    svm_append_opcode(vm->code, sptr++, SPRINT);
     svm_append_opcode(vm->code, sptr++, HALT);
     svm_exec(vm);
     return 0;
