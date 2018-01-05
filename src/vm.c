@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include "vm.h"
 #include "vm_utils.h"
-#include "ffi.h"
 
 svm_stack_item_t *svm_exec(svm_t *vm){
     ssize_t s_iptr = vm->baseiptr;
@@ -200,6 +199,47 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 vm->stack[++s_sptr].boolean = a != b;
                 break;
             }
+            case CMPB: {
+                svm_stack_item_t *b = &vm->stack[s_sptr--];
+                svm_stack_item_t *a = &vm->stack[s_sptr--];
+                bool equality = memcmp(a, b, sizeof(*a));
+                vm->stack[++s_sptr].boolean = equality;
+                break;
+            }
+            case CMPD: {
+                svm_stack_item_t *b = &vm->stack[s_sptr--];
+                svm_stack_item_t *a = &vm->stack[s_sptr--];
+                if(a->type != b->type){
+                    vm->stack[++s_sptr].boolean = false;
+                }
+                else {
+                    switch(a->type){
+                        case svm_integer:
+                            vm->stack[++s_sptr].boolean = a->integer == b->integer;
+                            break;
+                        case svm_boolean:
+                            vm->stack[++s_sptr].boolean = a->boolean == b->boolean;
+                            break;
+                        case svm_character:
+                            vm->stack[++s_sptr].boolean = a->character == b->character;
+                            break;
+                        case svm_string:
+                            if(a->string->len < b->string->len){
+                                vm->stack[++s_sptr].boolean = !strncmp(a->string->str, b->string->str, a->string->len);
+                            }
+                            else {
+                                vm->stack[++s_sptr].boolean = !strncmp(a->string->str, b->string->str, b->string->len);
+                            }
+                            break;
+                        case svm_float:
+                            vm->stack[++s_sptr].boolean = a->floating == b->floating;
+                            break;
+                        default:
+                            vm->stack[++s_sptr].boolean = false;
+                    }
+                }
+                break;
+            }
             case CALL: {
                 ssize_t addr = vm->code[s_iptr].function.addr;
                 s_csptr++;
@@ -212,21 +252,30 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 s_iptr = addr;
                 break;
             }
-            case FFI: {
-                puts("FFI opcode");
-                svm_ffi_t *n_ffi = vm->code[s_iptr].ffi;
-                svm_stack_item_t *n_stack = calloc(n_ffi->nargs, sizeof(svm_stack_item_t));
-                for(size_t i = 0; i < n_ffi->nargs; i++){
-                    printf("%zu\n", i);
-                    n_stack[i] = vm->stack[s_sptr - i];
-                }
-                svm_ffi_call(n_ffi, n_stack);
-                s_iptr++;
-                break;
-            }
             case RET: {
                 s_iptr = vm->cstack[s_csptr].ret + 1;
                 s_csptr--;
+                break;
+            }
+            case RJMP: {
+                int val = vm->stack[s_sptr--].integer;
+                s_iptr += (ssize_t)val;
+                break;
+            }
+            case RJMPIT: {
+                int b = vm->stack[s_sptr--].integer;
+                bool a = vm->stack[s_sptr--].boolean;
+                if(a){
+                    s_iptr += (ssize_t)b;
+                }
+                break;
+            }
+            case RJMPIF: {
+                int b = vm->stack[s_sptr--].integer;
+                bool a = vm->stack[s_sptr--].boolean;
+                if(!a){
+                    s_iptr += (ssize_t)b;
+                }
                 break;
             }
             case LOAD: {
