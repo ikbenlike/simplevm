@@ -25,30 +25,35 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].integer = a + b;
+                vm->stack[s_sptr].type = svm_integer;
                 break;
             }
             case ISUB: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].integer = a - b;
+                vm->stack[s_sptr].type = svm_integer;
                 break;
             }
             case IDIV: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].integer = a / b;
+                vm->stack[s_sptr].type = svm_integer;
                 break;
             }
             case IMUL: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].integer = a * b;
+                vm->stack[s_sptr].type = svm_integer;
                 break;
             }
             case IMOD: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].integer = a % b;
+                vm->stack[s_sptr].type = svm_integer;
                 break;
             }
             case IPRINT: {
@@ -59,24 +64,28 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 float b = vm->stack[s_sptr--].floating;
                 float a = vm->stack[s_sptr--].floating;
                 vm->stack[++s_sptr].floating = a + b;
+                vm->stack[s_sptr].type = svm_float;
                 break;
             }
             case FSUB: {
                 float b = vm->stack[s_sptr--].floating;
                 float a = vm->stack[s_sptr--].floating;
                 vm->stack[++s_sptr].floating = a - b;
+                vm->stack[s_sptr].type = svm_float;
                 break;
             }
             case FDIV: {
                 float b = vm->stack[s_sptr--].floating;
                 float a = vm->stack[s_sptr--].floating;
                 vm->stack[++s_sptr].floating = a / b;
+                vm->stack[s_sptr].type = svm_float;
                 break;
             }
             case FMUL: {
                 float b = vm->stack[s_sptr--].floating;
                 float a = vm->stack[s_sptr--].floating;
                 vm->stack[++s_sptr].floating = a * b;
+                vm->stack[s_sptr].type = svm_float;
                 break;
             }
             case FMOD:
@@ -92,6 +101,7 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 free(vm->stack[++s_sptr].string->str);
                 free(vm->stack[s_sptr].string);
                 vm->stack[s_sptr].string = tmp;
+                vm->stack[s_sptr].type = svm_string;
                 break;
             }
             case SPRINT: {
@@ -109,60 +119,75 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 char *tmp = svm_get_term_input(stdin);
                 vm->stack[++s_sptr].string = svm_string_from_cstr(tmp);
                 free(tmp);
+                vm->stack[s_sptr].type = svm_string;
                 break;
             }
             case CADD: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].character = a + b;
+                vm->stack[s_sptr].type = svm_character;
                 break;
             }
             case CSUB: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].character = a - b;
+                vm->stack[s_sptr].type = svm_character;
                 break;
             }
             case CDIV: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].character = a / b;
+                vm->stack[s_sptr].type = svm_character;
                 break;
             }
             case CMUL: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].character = a * b;
+                vm->stack[s_sptr].type = svm_character;
                 break;
             }
             case CMOD: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].character = a % b;
+                vm->stack[s_sptr].type = svm_character;
+                break;
+            }
+            case CPRINT: {
+                char a = vm->stack[s_sptr--].character;
+                printf("%c\n", a);
                 break;
             }
             case IEQ: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].boolean = a == b;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case INEQ: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
                 vm->stack[++s_sptr].boolean = a != b;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case FEQ: {
                 float b = vm->stack[s_sptr--].floating;
                 float a = vm->stack[s_sptr--].floating;
                 vm->stack[++s_sptr].boolean = a == b;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case FNEQ: {
                 float b = vm->stack[s_sptr--].floating;
                 float a = vm->stack[s_sptr--].floating;
                 vm->stack[++s_sptr].boolean = a != b;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case SEQ: {
@@ -174,6 +199,7 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 else {
                     vm->stack[++s_sptr].boolean = strncmp(a->str, b->str, a->len) == 0;
                 }
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case SNEQ: {
@@ -185,18 +211,21 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 else {
                     vm->stack[++s_sptr].boolean = strncmp(a->str, b->str, a->len) != 0;
                 }
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case CEQ: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].boolean = a == b;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case CNEQ: {
                 char b = vm->stack[s_sptr--].character;
                 char a = vm->stack[s_sptr--].character;
                 vm->stack[++s_sptr].boolean = a != b;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case CMPB: {
@@ -204,6 +233,7 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 svm_stack_item_t *a = &vm->stack[s_sptr--];
                 bool equality = memcmp(a, b, sizeof(*a));
                 vm->stack[++s_sptr].boolean = equality;
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case CMPD: {
@@ -238,6 +268,7 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                             vm->stack[++s_sptr].boolean = false;
                     }
                 }
+                vm->stack[s_sptr].type = svm_boolean;
                 break;
             }
             case CALL: {

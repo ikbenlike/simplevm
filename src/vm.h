@@ -36,6 +36,7 @@
         FPRINT,
         SPRINT,
         BPRINT,
+        CPRINT,
         SIN,
         PUSH,
         CMP,
