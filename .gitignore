@@ -10,3 +10,4 @@
 vgcore.*
 *.exe
 *.obj
+*.a
