@@ -30,7 +30,9 @@ size_t svm_write_str(svm_stack_item_t *item, FILE *out){
     if(!count) return 0;
     size_t count2 = fwrite(&item->string->len, sizeof(item->string->len), 1, out);
     if(!count2) return 0;
-    count += fwrite(&item->string->str, sizeof(char), item->string->len, out);
+    for(size_t i = 0; i < item->string->len; i++){
+        count += fwrite(&item->string->str[i], sizeof(item->string->str[0]), 1, out);
+    }
     return count + count2;
 }
 
