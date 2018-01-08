@@ -157,6 +157,11 @@ svm_stack_item_t *svm_exec(svm_t *vm){
                 vm->stack[s_sptr].type = svm_character;
                 break;
             }
+            case CPRINT: {
+                char a = vm->stack[s_sptr--].character;
+                printf("%c\n", a);
+                break;
+            }
             case IEQ: {
                 int b = vm->stack[s_sptr--].integer;
                 int a = vm->stack[s_sptr--].integer;
