@@ -42,6 +42,18 @@ inline void svm_append_string(svm_stack_item_t *stack, size_t sptr, svm_string_t
     return;
 }
 
+inline void svm_append_bool(svm_stack_item_t *stack, size_t sptr, bool value){
+    stack[sptr].type = svm_boolean;
+    stack[sptr].boolean = value;
+    return;
+}
+
+inline void svm_append_char(svm_stack_item_t *stack, size_t sptr, char value){
+    stack[sptr].type = svm_character;
+    stack[sptr].character = value;
+    return;
+}
+
 inline void svm_append_function(svm_stack_item_t *stack, size_t sptr, svm_function_t value){
     stack[sptr].type = svm_function;
     stack[sptr].function = value;
