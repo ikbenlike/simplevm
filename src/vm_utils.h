@@ -16,5 +16,6 @@
     svm_string_t *svm_string_from_cstr(char *str);
     char *svm_char_from_svm_str(svm_string_t *str);
     char *svm_get_term_input(FILE *stream);
+    char *svm_type_to_str(enum svm_types type);
 
 #endif

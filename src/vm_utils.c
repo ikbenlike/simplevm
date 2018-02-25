@@ -115,3 +115,28 @@ inline char *svm_get_term_input(FILE *stream){
     buffer[i] = '\0';
     return buffer;
 }
+
+char *svm_type_to_str(enum svm_types type){
+    if(type == svm_integer){
+        return "integer";
+    }
+    else if(type == svm_float){
+        return "floating point";
+    }
+    else if(type == svm_boolean){
+        return "boolean";
+    }
+    else if(type == svm_character){
+        return "character";
+    }
+    else if(type == svm_string){
+        return "string";
+    }
+    else if(type == svm_opcode){
+        return "opcode";
+    }
+    else if(type == svm_function){
+        return "function";
+    }
+    return NULL;
+}
