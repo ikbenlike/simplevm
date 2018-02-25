@@ -323,7 +323,11 @@ svm_stack_item_t *svm_exec(svm_t *vm){
             opcode = vm->code[s_iptr].opcode;
         }
         else {
-            fprintf(stderr, "SimpleVM: invalid opcode at instruction pointer %zu\n", s_iptr);
+            #ifdef ON_WINDOWS
+                fprintf(stderr, "SimpleVM: invalid opcode at instruction pointer %Iu\n", s_iptr);
+            #else
+                fprintf(stderr, "SimpleVM: invalid opcode at instruction pointer %zu\n", s_iptr);
+            #endif
             return NULL;
         }
     }
