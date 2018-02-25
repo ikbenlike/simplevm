@@ -61,7 +61,7 @@ size_t svm_write_function(svm_stack_item_t *item, FILE *out){
     size_t count = fwrite(&item->type, sizeof(item->type), 1, out);
     if(!count) return 0;
     count += fwrite(&item->function, sizeof(item->function), 1, out);
-    return 0;
+    return count;
 }
 
 size_t svm_write_stack_item(svm_stack_item_t *item, FILE *out){
@@ -99,6 +99,7 @@ size_t svm_save(svm_t *vm, char *path){
     fwrite(&vm->baseiptr, sizeof(vm->baseiptr), 1, out);
     fwrite(&vm->code_size, sizeof(vm->code_size), 1, out);
     fwrite(&vm->stack_size, sizeof(vm->stack_size), 1, out);
+    fwrite(&vm->cstack_size, sizeof(vm->cstack_size), 1, out);
 
     size_t total = 0;
     for(size_t i = 0; i < vm->code_size; i++){
@@ -195,25 +196,29 @@ svm_stack_item_t *svm_read_stack_item(FILE *in){
             return svm_read_function(in);
             break;
         default:
-            fprintf(stderr, "SimpleVM: invalid type: %i\n", in);
+            fprintf(stderr, "SimpleVM: invalid type: %i\n", type);
             break;
     }
     return NULL;
 }
 
-svm_t *svm_read(svm_t *vm, char *path){
+svm_t *svm_read(char *path){
     FILE *in = fopen(path, "rb");
-    fread(&vm->baseiptr, sizeof(vm->baseiptr), 1, in);
-    fread(&vm->code_size, sizeof(vm->code_size), 1, in);
-    fread(&vm->stack_size, sizeof(vm->stack_size), 1, in);
+    size_t baseiptr = 0;
+    size_t code_size = 0;
+    size_t stack_size = 0;
+    size_t cstack_size = 0;
 
-    vm->stack = calloc(vm->stack_size, sizeof(svm_stack_item_t));
-    vm->code = calloc(vm->code_size, sizeof(svm_stack_item_t));
+    fread(&baseiptr, sizeof(baseiptr), 1, in);
+    fread(&code_size, sizeof(code_size), 1, in);
+    fread(&stack_size, sizeof(stack_size), 1, in);
+    fread(&cstack_size, sizeof(cstack_size), 1, in);
+
+    svm_t *vm = svm_init(code_size, stack_size, cstack_size, baseiptr);
 
     for(size_t i = 0; i < vm->code_size; i++){
         svm_stack_item_t *item = svm_read_stack_item(in);
         if(!item){
-            printf("%p", i);
             return NULL;
         }
         memcpy(vm->code + i, item, sizeof(svm_stack_item_t));

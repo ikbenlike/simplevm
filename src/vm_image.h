@@ -7,5 +7,5 @@
     svm_stack_item_t *svm_read_stack_item(FILE *in);
 
     size_t svm_save(svm_t *vm, char *path);
-    svm_t *svm_read(svm_t *vm, char *path);
+    svm_t *svm_read(char *path);
 #endif
