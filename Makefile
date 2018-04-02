@@ -21,6 +21,11 @@ libsimplevm: $(src)
 libsimplevm-windows: $(src)
 	$(CC) $(src) $(CFLAGS) -D ON_WINDOWS $(LDFLAGS) -shared -Wl,--out-implib,$(ODIR)/libsimplevm_dll.a -o $(ODIR)/libsimplevm.dll
 
+tests: $(src)
+	$(CC) $(CFLAGS) -L$(ODIR) -lsimplevm src/tests/function.c -o $(ODIR)/functions
+	$(CC) $(CFLAGS) -L$(ODIR) -lsimplevm src/tests/prints.c -o $(ODIR)/prints
+	$(CC) $(CFLAGS) -L$(ODIR) -lsimplevm src/tests/conditionals.c -o $(ODIR)/conditionals
+
 tests-windows: $(src)
 	$(CC) $(CFLAGS) -D ON_WINDOWS -L$(ODIR) -lsimplevm src/tests/function.c -o $(ODIR)/functions
 	$(CC) $(CFLAGS) -D ON_WINDOWS -L$(ODIR) -lsimplevm src/tests/prints.c -o $(ODIR)/prints
